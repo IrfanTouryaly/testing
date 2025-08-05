@@ -1,0 +1,31 @@
+name: CI for production branch
+
+on:
+  push:
+    branches: [ "prod" ]
+  pull_request:
+    branches: [ "prod" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show all commits in this push to prod
+        run: |
+          echo "🚀 A push was made to the production (prod) branch!"
+          echo "🔍 Listing all commits included in this push:"
+          
+          # Fetch history to compare commit range
+          git fetch origin
+
+          # Show commits between last successful build and current commit
+          echo "🔸 Commits in this push:"
+          git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:"%h - %an: %s" || echo "No new commits found."
+
+      - name: End of job
+        run: echo "✅ CI job completed for prod branch"
+
